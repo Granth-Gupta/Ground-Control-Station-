@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ISL-GCS // CanSat Ground Control Software</title>
 
+    <!-- External Libraries -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -15,15 +16,17 @@
       rel="stylesheet"
     />
 
+    <!-- External JS Dependencies -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <link rel="stylesheet" href="style.css" />
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="app">
-      <!-- TOP CONTROL BAR -->
+      <!-- ============ TOP CONTROL BAR ============ -->
       <div class="topbar">
         <div class="brand">
           <div class="brand-mark">ISL</div>
@@ -35,8 +38,8 @@
 
         <div class="status-cluster">
           <div class="status-chip">
-            <span class="dot off" id="linkDot"></span>
-            <span id="linkLabel">TELEMETRY IDLE</span>
+            <span class="dot off" id="linkDot"></span
+            ><span id="linkLabel">TELEMETRY IDLE</span>
           </div>
           <div class="status-chip" id="clockChip">
             GPS TIME <span id="gpsClock">--:--:--</span>
@@ -56,9 +59,9 @@
         </div>
       </div>
 
-      <!-- MAIN AREA -->
+      <!-- ============ MAIN AREA ============ -->
       <div class="main-area">
-        <!-- 3. MISSION CONTROL PANEL -->
+        <!-- MISSION CONTROL PANEL -->
         <div class="top-mission panel">
           <div class="panel-head">
             <h2>Mission Control Panel</h2>
@@ -67,23 +70,23 @@
           <div class="panel-body mission-body">
             <div class="cmd-grid">
               <div class="cmd-btn sep" id="btnSeparation">
-                <span class="icon">⛓</span>
-                <span class="name">Manual<br />Separation</span>
+                <span class="icon">⛓</span
+                ><span class="name">Manual<br />Separation</span>
               </div>
               <div class="cmd-btn chute" id="btnChute">
-                <span class="icon">☂</span>
-                <span class="name">Emergency<br />Chute</span>
+                <span class="icon">☂</span
+                ><span class="name">Emergency<br />Chute</span>
               </div>
               <div class="cmd-btn redun" id="btnRedundant">
-                <span class="icon">⚡</span>
-                <span class="name">Redundant<br />Activation</span>
+                <span class="icon">⚡</span
+                ><span class="name">Redundant<br />Activation</span>
               </div>
             </div>
             <div class="cmd-log" id="cmdLog"></div>
           </div>
         </div>
 
-        <!-- 4 & 5. TELEMETRY + ERROR CODE -->
+        <!-- TELEMETRY + ERROR CODE -->
         <div class="left-col">
           <div class="panel">
             <div class="panel-head">
@@ -210,12 +213,12 @@
           </div>
         </div>
 
-        <!-- 6. REAL-TIME GRAPHS (Center Column - 5 Charts Grid) -->
+        <!-- REAL-TIME GRAPHS -->
         <div class="graphs-col">
           <div class="panel">
             <div class="panel-head">
-              <h2>Real-Time Telemetry Graphs</h2>
-              <span class="eyebrow">5 CHANNELS</span>
+              <h2>Real-Time Graphs</h2>
+              <span class="eyebrow">5 CH</span>
             </div>
             <div class="panel-body">
               <div class="chart-box">
@@ -226,7 +229,6 @@
                   <canvas id="chartAlt"></canvas>
                 </div>
               </div>
-
               <div class="chart-box">
                 <div class="chart-title">
                   <span>PRESSURE</span><span id="lblPress">0 kPa</span>
@@ -235,7 +237,6 @@
                   <canvas id="chartPress"></canvas>
                 </div>
               </div>
-
               <div class="chart-box">
                 <div class="chart-title">
                   <span>TEMPERATURE</span><span id="lblTemp">0 °C</span>
@@ -244,7 +245,6 @@
                   <canvas id="chartTemp"></canvas>
                 </div>
               </div>
-
               <div class="chart-box">
                 <div class="chart-title">
                   <span>DESCENT RATE</span><span id="lblDescent">0 m/s</span>
@@ -253,9 +253,7 @@
                   <canvas id="chartDescent"></canvas>
                 </div>
               </div>
-
-              <!-- Battery Voltage moved here -->
-              <div class="chart-box volt-full-span">
+              <div class="chart-box wide">
                 <div class="chart-title">
                   <span>BATTERY VOLTAGE</span><span id="lblVolt">0 V</span>
                 </div>
@@ -263,93 +261,88 @@
                   <canvas id="chartVolt"></canvas>
                 </div>
               </div>
+              <div class="chart-box">
+                <div class="panel video-panel">
+                  <div class="panel-head">
+                    <h2>Video Stream</h2>
+                    <span class="eyebrow">CAM</span>
+                  </div>
+                  <div class="panel-body video-body">
+                    <div class="video-frame" id="videoFrame">
+                      <video id="camVideo" autoplay playsinline muted></video>
+                      <div class="placeholder" id="videoPlaceholder">
+                        <span>📷</span><span>NO SIGNAL</span>
+                      </div>
+                      <div class="rec" id="recBadge" style="display: none">
+                        <span
+                          class="dot on"
+                          style="
+                            background: var(--red);
+                            box-shadow: 0 0 6px var(--red);
+                          "
+                        ></span
+                        >LIVE
+                      </div>
+                    </div>
+                    <div class="video-controls">
+                      <select id="camSelect">
+                        <option value="">Camera…</option>
+                      </select>
+                      <button class="btn small primary" id="btnCamStart">
+                        Start
+                      </button>
+                      <button class="btn small stop" id="btnCamStop" disabled>
+                        Stop
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 7. RIGHT SIDEBAR: TRACKING MAP + ORIENTATION & VIDEO STREAM -->
+        <!-- MAP + ORIENTATION + VIDEO -->
         <div class="side-col">
           <div class="panel map-panel">
             <div class="panel-head">
               <h2>Tracking Map</h2>
-              <span class="eyebrow">GPS &middot; TRAJECTORY</span>
+              <span class="eyebrow">GPS</span>
             </div>
             <div id="map"></div>
           </div>
 
-          <!-- Orientation & Video Stream moved here -->
-          <div class="panel media-panel">
+          <div class="panel orient-panel">
             <div class="panel-head">
-              <h2>Payload Orientation &amp; Stream</h2>
-              <span class="eyebrow">3D &middot; HUD &middot; CAM</span>
+              <h2>Orientation</h2>
+              <span class="eyebrow">R/P/Y</span>
             </div>
-            <div class="panel-body">
-              <div class="chart-box orient-mini">
-                <div class="chart-title">
-                  <span>ORIENTATION</span><span>R/P/Y</span>
+            <div class="panel-body orientation-body">
+              <div class="orientation-wrap">
+                <div class="hud-box">
+                  <span class="cap">HORIZON</span>
+                  <div id="horizonSvgWrap"></div>
                 </div>
-                <div class="orientation-wrap">
-                  <div class="hud-box">
-                    <span class="cap">HORIZON</span>
-                    <div id="horizonSvgWrap"></div>
-                  </div>
-                  <div class="hud-box">
-                    <span class="cap">3D MODEL (CANSAT)</span>
-                    <div id="cubeWrap"></div>
-                  </div>
-                </div>
-                <div class="orientation-values">
-                  <div>
-                    <span class="cap" style="display: block; text-align: center"
-                      >ROLL</span
-                    >
-                    <span class="hud-value" id="valRoll">0.0°</span>
-                  </div>
-                  <div>
-                    <span class="cap" style="display: block; text-align: center"
-                      >PITCH</span
-                    >
-                    <span class="hud-value" id="valPitch">0.0°</span>
-                  </div>
-                  <div>
-                    <span class="cap" style="display: block; text-align: center"
-                      >YAW</span
-                    >
-                    <span class="hud-value" id="valYaw">0.0°</span>
-                  </div>
+                <div class="hud-box">
+                  <span class="cap">3D MODEL</span>
+                  <div id="cubeWrap"></div>
                 </div>
               </div>
-
-              <div class="chart-box video-mini">
-                <div class="chart-title">
-                  <span>VIDEO STREAM</span><span>PAYLOAD CAM</span>
+              <div class="orientation-values">
+                <div>
+                  <span class="cap" style="display: block; text-align: center"
+                    >ROLL</span
+                  ><span class="hud-value" id="valRoll">0.0°</span>
                 </div>
-                <div class="video-frame" id="videoFrame">
-                  <video id="camVideo" autoplay playsinline muted></video>
-                  <div class="placeholder" id="videoPlaceholder">
-                    <span>📷</span><span>NO SIGNAL</span>
-                  </div>
-                  <div class="rec" id="recBadge" style="display: none">
-                    <span
-                      class="dot on"
-                      style="
-                        background: var(--red);
-                        box-shadow: 0 0 6px var(--red);
-                      "
-                    ></span
-                    >LIVE
-                  </div>
+                <div>
+                  <span class="cap" style="display: block; text-align: center"
+                    >PITCH</span
+                  ><span class="hud-value" id="valPitch">0.0°</span>
                 </div>
-                <div class="video-controls">
-                  <select id="camSelect">
-                    <option value="">Camera…</option>
-                  </select>
-                  <button class="btn small primary" id="btnCamStart">
-                    Start
-                  </button>
-                  <button class="btn small stop" id="btnCamStop" disabled>
-                    Stop
-                  </button>
+                <div>
+                  <span class="cap" style="display: block; text-align: center"
+                    >YAW</span
+                  ><span class="hud-value" id="valYaw">0.0°</span>
                 </div>
               </div>
             </div>
@@ -358,6 +351,7 @@
       </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Main Application Script -->
+    <script src="app.js"></script>
   </body>
 </html>
