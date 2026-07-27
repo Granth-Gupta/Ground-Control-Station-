@@ -1,2 +1,2 @@
-# Ground-Control-Station-
+# Ground-Control-Station
 ISL CANSAT Project
