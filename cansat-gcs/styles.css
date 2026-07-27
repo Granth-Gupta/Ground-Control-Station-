@@ -399,13 +399,36 @@ body {
   text-align: center;
 }
 
+/* Video Box Container */
+.video-box {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.video-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100%;
+}
+
+/* Force elements inside Video Body to stack vertically */
+.video-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 10px !important;
+}
+
+/* Top Video Frame */
 .video-frame {
   position: relative;
   width: 100%;
-  height: 120px;
+  height: 140px; /* Adjust height as needed */
   background: #000;
   border-radius: 4px;
   overflow: hidden;
+  border: 1px solid var(--panel-border, rgba(0, 229, 255, 0.15));
 }
 
 #camVideo {
@@ -421,8 +444,41 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: var(--text-dim);
+  color: var(--text-dim, #7a8b9e);
   font-size: 11px;
+  gap: 4px;
+}
+
+/* Bottom Horizontal Control Bar */
+.video-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100%;
+}
+
+.video-controls select {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--panel-border, rgba(0, 229, 255, 0.2));
+  color: var(--text, #e0e6ed);
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  border-radius: 4px;
+  padding: 6px 8px;
+  height: 34px;
+  outline: none;
+}
+
+.video-controls .btn {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .video-frame .rec {
@@ -436,20 +492,4 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-.video-controls {
-  display: flex;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.video-controls select {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--panel-border);
-  color: var(--text);
-  font-size: 10px;
-  border-radius: 3px;
-  padding: 2px;
 }

@@ -213,7 +213,7 @@
           </div>
         </div>
 
-        <!-- REAL-TIME GRAPHS -->
+        <!-- REAL-TIME GRAPHS & Video Stream-->
         <div class="graphs-col">
           <div class="panel">
             <div class="panel-head">
@@ -261,13 +261,14 @@
                   <canvas id="chartVolt"></canvas>
                 </div>
               </div>
-              <div class="chart-box">
+              <div class="chart-box video-box">
                 <div class="panel video-panel">
                   <div class="panel-head">
                     <h2>Video Stream</h2>
                     <span class="eyebrow">CAM</span>
                   </div>
                   <div class="panel-body video-body">
+                    <!-- Top: Video Viewport -->
                     <div class="video-frame" id="videoFrame">
                       <video id="camVideo" autoplay playsinline muted></video>
                       <div class="placeholder" id="videoPlaceholder">
@@ -284,15 +285,17 @@
                         >LIVE
                       </div>
                     </div>
+
+                    <!-- Bottom: Horizontal Controls Below Video -->
                     <div class="video-controls">
                       <select id="camSelect">
-                        <option value="">Camera…</option>
+                        <option value="">Select Camera…</option>
                       </select>
-                      <button class="btn small primary" id="btnCamStart">
-                        Start
+                      <button class="btn primary" id="btnCamStart">
+                        ▶ Start
                       </button>
-                      <button class="btn small stop" id="btnCamStop" disabled>
-                        Stop
+                      <button class="btn stop" id="btnCamStop" disabled>
+                        ■ Stop
                       </button>
                     </div>
                   </div>
@@ -302,7 +305,7 @@
           </div>
         </div>
 
-        <!-- MAP + ORIENTATION + VIDEO -->
+        <!-- MAP + ORIENTATION -->
         <div class="side-col">
           <div class="panel map-panel">
             <div class="panel-head">
