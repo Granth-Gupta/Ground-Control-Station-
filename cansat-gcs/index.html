@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISL-GCS // CanSat Ground Control Software</title>
+
+    <!-- External Libraries -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- External JS Dependencies -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- ============ TOP CONTROL BAR ============ -->
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">ISL</div>
+          <div class="brand-text">
+            <h1>CanSat Ground Control</h1>
+            <span>India Space Lab &middot; Mission Ops Software</span>
+          </div>
+        </div>
+
+        <div class="status-cluster">
+          <div class="status-chip">
+            <span class="dot off" id="linkDot"></span
+            ><span id="linkLabel">TELEMETRY IDLE</span>
+          </div>
+          <div class="status-chip" id="clockChip">
+            GPS TIME <span id="gpsClock">--:--:--</span>
+          </div>
+          <div class="status-chip">
+            PKT <span id="pktCount" style="color: var(--text)">0</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn primary" id="btnStart">▶ Start</button>
+          <button class="btn stop" id="btnStop" disabled>■ Stop</button>
+          <button class="btn" id="btnSync">⏱ Sync Time</button>
+          <button class="btn" id="btnReset">⟲ Reset Pkt</button>
+          <button class="btn" id="btnExportCsv">⇩ CSV</button>
+          <button class="btn" id="btnExportGraph">⇩ Graphs</button>
+        </div>
+      </div>
+
+      <!-- ============ MAIN AREA ============ -->
+      <div class="main-area">
+        <!-- MISSION CONTROL PANEL -->
+        <div class="top-mission panel">
+          <div class="panel-head">
+            <h2>Mission Control Panel</h2>
+            <span class="eyebrow">CRITICAL COMMANDS</span>
+          </div>
+          <div class="panel-body mission-body">
+            <div class="cmd-grid">
+              <div class="cmd-btn sep" id="btnSeparation">
+                <span class="icon">⛓</span
+                ><span class="name">Manual<br />Separation</span>
+              </div>
+              <div class="cmd-btn chute" id="btnChute">
+                <span class="icon">☂</span
+                ><span class="name">Emergency<br />Chute</span>
+              </div>
+              <div class="cmd-btn redun" id="btnRedundant">
+                <span class="icon">⚡</span
+                ><span class="name">Redundant<br />Activation</span>
+              </div>
+            </div>
+            <div class="cmd-log" id="cmdLog"></div>
+          </div>
+        </div>
+
+        <!-- TELEMETRY + ERROR CODE -->
+        <div class="left-col">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Telemetry</h2>
+              <span class="eyebrow">LIVE</span>
+            </div>
+            <div class="panel-body">
+              <div class="tele-group">
+                <div class="tele-group-label">Container</div>
+                <div class="tele-row">
+                  <span class="k">Team ID</span
+                  ><span class="v hi">ISL-2026</span>
+                </div>
+                <div class="tele-row">
+                  <span class="k">Mission Time</span
+                  ><span class="v" id="tMissionTime">00:00:00</span>
+                </div>
+                <div class="tele-row">
+                  <span class="k">State</span
+                  ><span class="v hi" id="tState">STANDBY</span>
+                </div>
+                <div class="tele-row">
+                  <span class="k">Altitude</span
+                  ><span class="v" id="tAlt"
+                    >0.0<span class="unit">m</span></span
+                  >
+                </div>
+                <div class="tele-row">
+                  <span class="k">Pressure</span
+                  ><span class="v" id="tPress"
+                    >0.0<span class="unit">kPa</span></span
+                  >
+                </div>
+                <div class="tele-row">
+                  <span class="k">Temperature</span
+                  ><span class="v" id="tTemp"
+                    >0.0<span class="unit">°C</span></span
+                  >
+                </div>
+                <div class="tele-row">
+                  <span class="k">Voltage</span
+                  ><span class="v" id="tVolt"
+                    >0.0<span class="unit">V</span></span
+                  >
+                </div>
+                <div class="tele-row">
+                  <span class="k">GPS Sats</span
+                  ><span class="v" id="tSats">0</span>
+                </div>
+                <div class="tele-row">
+                  <span class="k">GPS Lat/Lon</span
+                  ><span class="v" id="tLatLon" style="font-size: 9.5px"
+                    >--, --</span
+                  >
+                </div>
+              </div>
+              <div class="tele-group">
+                <div class="tele-group-label">Payload</div>
+                <div class="tele-row">
+                  <span class="k">Altitude</span
+                  ><span class="v" id="pAlt"
+                    >0.0<span class="unit">m</span></span
+                  >
+                </div>
+                <div class="tele-row">
+                  <span class="k">Temp</span
+                  ><span class="v" id="pTemp"
+                    >0.0<span class="unit">°C</span></span
+                  >
+                </div>
+                <div class="tele-row">
+                  <span class="k">Voltage</span
+                  ><span class="v" id="pVolt"
+                    >0.0<span class="unit">V</span></span
+                  >
+                </div>
+                <div class="tele-row">
+                  <span class="k">Descent Rate</span
+                  ><span class="v" id="pDescent"
+                    >0.0<span class="unit">m/s</span></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Error Code</h2>
+              <span class="eyebrow">4-DIGIT</span>
+            </div>
+            <div class="panel-body">
+              <div class="errcode-display">
+                <div class="errcode-digit ok" id="d1">
+                  <span class="num">0</span><span class="lbl">Descent</span>
+                </div>
+                <div class="errcode-digit ok" id="d2">
+                  <span class="num">0</span><span class="lbl">GPS</span>
+                </div>
+                <div class="errcode-digit ok" id="d3">
+                  <span class="num">0</span><span class="lbl">Separ.</span>
+                </div>
+                <div class="errcode-digit ok" id="d4">
+                  <span class="num">0</span><span class="lbl">Chute</span>
+                </div>
+              </div>
+              <div class="errline">
+                <span class="chip" id="e1chip"></span>Descent
+                <b id="e1txt">within 8–10 m/s</b>
+              </div>
+              <div class="errline">
+                <span class="chip" id="e2chip"></span>GPS
+                <b id="e2txt">available</b>
+              </div>
+              <div class="errline">
+                <span class="chip" id="e3chip"></span>Separation
+                <b id="e3txt">pending</b>
+              </div>
+              <div class="errline">
+                <span class="chip" id="e4chip"></span>Chute
+                <b id="e4txt">inactive</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REAL-TIME GRAPHS -->
+        <div class="graphs-col">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Real-Time Graphs</h2>
+              <span class="eyebrow">5 CH</span>
+            </div>
+            <div class="panel-body">
+              <div class="chart-box">
+                <div class="chart-title">
+                  <span>ALTITUDE</span><span id="lblAlt">0 m</span>
+                </div>
+                <div class="chart-canvas-wrap">
+                  <canvas id="chartAlt"></canvas>
+                </div>
+              </div>
+              <div class="chart-box">
+                <div class="chart-title">
+                  <span>PRESSURE</span><span id="lblPress">0 kPa</span>
+                </div>
+                <div class="chart-canvas-wrap">
+                  <canvas id="chartPress"></canvas>
+                </div>
+              </div>
+              <div class="chart-box">
+                <div class="chart-title">
+                  <span>TEMPERATURE</span><span id="lblTemp">0 °C</span>
+                </div>
+                <div class="chart-canvas-wrap">
+                  <canvas id="chartTemp"></canvas>
+                </div>
+              </div>
+              <div class="chart-box">
+                <div class="chart-title">
+                  <span>DESCENT RATE</span><span id="lblDescent">0 m/s</span>
+                </div>
+                <div class="chart-canvas-wrap">
+                  <canvas id="chartDescent"></canvas>
+                </div>
+              </div>
+              <div class="chart-box wide">
+                <div class="chart-title">
+                  <span>BATTERY VOLTAGE</span><span id="lblVolt">0 V</span>
+                </div>
+                <div class="chart-canvas-wrap">
+                  <canvas id="chartVolt"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAP + ORIENTATION + VIDEO -->
+        <div class="side-col">
+          <div class="panel map-panel">
+            <div class="panel-head">
+              <h2>Tracking Map</h2>
+              <span class="eyebrow">GPS</span>
+            </div>
+            <div id="map"></div>
+          </div>
+
+          <div class="panel orient-panel">
+            <div class="panel-head">
+              <h2>Orientation</h2>
+              <span class="eyebrow">R/P/Y</span>
+            </div>
+            <div class="panel-body orientation-body">
+              <div class="orientation-wrap">
+                <div class="hud-box">
+                  <span class="cap">HORIZON</span>
+                  <div id="horizonSvgWrap"></div>
+                </div>
+                <div class="hud-box">
+                  <span class="cap">3D MODEL</span>
+                  <div id="cubeWrap"></div>
+                </div>
+              </div>
+              <div class="orientation-values">
+                <div>
+                  <span class="cap" style="display: block; text-align: center"
+                    >ROLL</span
+                  ><span class="hud-value" id="valRoll">0.0°</span>
+                </div>
+                <div>
+                  <span class="cap" style="display: block; text-align: center"
+                    >PITCH</span
+                  ><span class="hud-value" id="valPitch">0.0°</span>
+                </div>
+                <div>
+                  <span class="cap" style="display: block; text-align: center"
+                    >YAW</span
+                  ><span class="hud-value" id="valYaw">0.0°</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel video-panel">
+            <div class="panel-head">
+              <h2>Video Stream</h2>
+              <span class="eyebrow">CAM</span>
+            </div>
+            <div class="panel-body video-body">
+              <div class="video-frame" id="videoFrame">
+                <video id="camVideo" autoplay playsinline muted></video>
+                <div class="placeholder" id="videoPlaceholder">
+                  <span>📷</span><span>NO SIGNAL</span>
+                </div>
+                <div class="rec" id="recBadge" style="display: none">
+                  <span
+                    class="dot on"
+                    style="
+                      background: var(--red);
+                      box-shadow: 0 0 6px var(--red);
+                    "
+                  ></span
+                  >LIVE
+                </div>
+              </div>
+              <div class="video-controls">
+                <select id="camSelect">
+                  <option value="">Camera…</option>
+                </select>
+                <button class="btn small primary" id="btnCamStart">
+                  Start
+                </button>
+                <button class="btn small stop" id="btnCamStop" disabled>
+                  Stop
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Application Script -->
+    <script src="app.js"></script>
+  </body>
+</html>
